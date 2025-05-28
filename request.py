@@ -30,6 +30,7 @@ def organization_search(organization: str):
         response.raise_for_status()
 
         for comp in response.json().get("organizations", []):
+            # only accept exact name matches
             if comp['name'].lower() == organization.lower():
                 return comp['id']
         return None
@@ -103,7 +104,7 @@ def get_emails(companies: list):
     for c in companies:
         org_id = organization_search(c) # done
 
-        poc = people_search(org_id)
+        poc = people_search(org_id) if org_id != None else None
         name = poc[0] if poc != None else None
         id = poc[1] if poc != None else None
 
