@@ -16,3 +16,5 @@ if __name__ == "__main__":
     company_info = request.get_emails(companies) # find name and email through apollo
 
     files.write_email_csv(INPUT_PATH, OUTPUT_PATH, company_info) # write to csv file
+
+    print("done")
