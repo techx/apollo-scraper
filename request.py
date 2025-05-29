@@ -7,20 +7,43 @@ import requests
 load_dotenv()
 
 APOLLO_API_KEY = os.getenv("APOLLO_API_KEY")
-
 #print(APOLLO_API_KEY)
 
+# Flow: company name -> organization search -> organization id
+# organization id -> people search -> person id + name
+# person id -> people enrish -> person email
+
 def organization_search(organization: str):
-    """
-    Writes CSV file to the given file path.
+    org = "%20".join(organization.split(" "))
 
-    Args:
-        input_path (str): The path to the input CSV file.
-        output_path (str): The path to the output CSV file.
-        company_info (dict): Company POC's email and name.
-    """
+    url = "".join(["https://api.apollo.io/api/v1/mixed_companies/search?q_organization_name=",org])
+    
+    headers = {
+        "accept": "application/json",
+        "Cache-Control": "no-cache",
+        "Content-Type": "application/json",
+        "x-api-key": APOLLO_API_KEY
+    }
+    
+    try:
+        response = requests.post(url, headers=headers)
+        response.raise_for_status()
 
-    url = "https://api.apollo.io/api/v1/people/match?reveal_personal_emails=false&reveal_phone_number=false"
+        for comp in response.json().get("organizations", []):
+            # only accept exact name matches
+            if comp['name'].lower() == organization.lower():
+                return comp['id']
+        return None
+    except requests.exceptions.HTTPError as e:
+        print("API request failed:", e)
+
+
+
+def people_search(org_id: str):
+    titles = ["talent","universtiy","recruitment"]
+    titles = "&".join(["person_titles[]="+t for t in titles])
+
+    url = "https://api.apollo.io/api/v1/mixed_people/search?" + titles + "&contact_email_status[]=verified&" + "organization_ids[]=" + org_id
 
     headers = {
         "accept": "application/json",
@@ -28,16 +51,66 @@ def organization_search(organization: str):
         "Content-Type": "application/json",
         "x-api-key": APOLLO_API_KEY
     }
+    
+    try:
+        response = requests.post(url, headers=headers)
+        response.raise_for_status()
 
-    response = requests.post(url, headers=headers)
+        for person in response.json().get("people", []):
+            return [person['name'], person['id']]
+    except requests.exceptions.HTTPError as e:
+        print("API request failed:", e)
+    
+    # no one with recruitment title
+    titles = ["founder","ceo"]
+    titles = "&".join(["person_titles[]="+t for t in titles])
+    url = "https://api.apollo.io/api/v1/mixed_people/search?" + titles + "&contact_email_status[]=verified&" + "organization_ids[]=" + org_id
+    
+    try:
+        response = requests.post(url, headers=headers)
+        response.raise_for_status()
 
-    print(response.text)
+        for person in response.json().get("people", []):
+            return [person['name'], person['id']]
+        return None
+    except requests.exceptions.HTTPError as e:
+        print("API request failed:", e)
+
+
+
+def people_enrich(id: str):
+    url = "https://api.apollo.io/api/v1/people/match?id=" + id + "&reveal_personal_emails=true&reveal_phone_number=false"
+
+    headers = {
+        "accept": "application/json",
+        "Cache-Control": "no-cache",
+        "Content-Type": "application/json",
+        "x-api-key": APOLLO_API_KEY
+    }
+    
+    try:
+        response = requests.post(url, headers=headers)
+        response.raise_for_status()
+
+        p = response.json().get("person", [])
+        return p["email"]
+    except requests.exceptions.HTTPError as e:
+        print("API request failed:", e)
+
+
 
 def get_emails(companies: list):
     company_info = {}
     for c in companies:
-        name = " ".join([c,"name"]) # replace with function calls later
-        email = " ".join([c,"email"])
+        org_id = organization_search(c) # done
+
+        poc = people_search(org_id) if org_id != None else None
+        name = poc[0] if poc != None else None
+        id = poc[1] if poc != None else None
+
+        email = people_enrich(id) if id != None else None
+        #name = " ".join([c,"name"]) # replace with function calls later
+        #email = " ".join([c,"email"])
 
         company_info[c]=[name, email]
 
