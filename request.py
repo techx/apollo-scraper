@@ -40,10 +40,35 @@ def organization_search(organization: str):
 
 
 def people_search(org_id: str):
+    url = "https://api.apollo.io/api/v1/mixed_people/search?" + "contact_email_status[]=verified&" + "organization_ids[]=" + org_id + "&"
+
     titles = ["talent","universtiy","recruitment"]
     titles = "&".join(["person_titles[]="+t for t in titles])
+    url1 = url + titles
 
-    url = "https://api.apollo.io/api/v1/mixed_people/search?" + titles + "&contact_email_status[]=verified&" + "organization_ids[]=" + org_id
+    headers = {
+        "accept": "application/json",
+        "Cache-Control": "no-cache",
+        "Content-Type": "application/json",
+        "x-api-key": APOLLO_API_KEY
+    }
+    
+    try:
+        response = requests.post(url, headers=headers)
+        response.raise_for_status()
+
+        for person in response.json().get("people", []):
+            return [person['name'], person['id']]
+    except requests.exceptions.HTTPError as e:
+        print("API request failed:", e)
+
+
+    # HR people
+    titles = ["HR"]
+    titles = "&".join(["person_titles[]="+t for t in titles])
+
+    # url = "https://api.apollo.io/api/v1/mixed_people/search?" + titles + "&contact_email_status[]=verified&" + "organization_ids[]=" + org_id
+    url2 = url + titles
 
     headers = {
         "accept": "application/json",
@@ -61,11 +86,13 @@ def people_search(org_id: str):
     except requests.exceptions.HTTPError as e:
         print("API request failed:", e)
     
-    # no one with recruitment title
-    titles = ["founder","ceo"]
+
+    titles = ["founder","ceo", "cto", "owner", "csuite", "cfo", "director", "manager"]
     titles = "&".join(["person_titles[]="+t for t in titles])
-    url = "https://api.apollo.io/api/v1/mixed_people/search?" + titles + "&contact_email_status[]=verified&" + "organization_ids[]=" + org_id
     
+    # url = "https://api.apollo.io/api/v1/mixed_people/search?" + titles + "&contact_email_status[]=verified&" + "organization_ids[]=" + org_id
+    url3 = url + titles
+
     try:
         response = requests.post(url, headers=headers)
         response.raise_for_status()
