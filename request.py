@@ -66,8 +66,6 @@ def people_search(org_id: str):
     # HR people
     titles = ["HR"]
     titles = "&".join(["person_titles[]="+t for t in titles])
-
-    # url = "https://api.apollo.io/api/v1/mixed_people/search?" + titles + "&contact_email_status[]=verified&" + "organization_ids[]=" + org_id
     url2 = url + titles
 
     headers = {
@@ -89,8 +87,6 @@ def people_search(org_id: str):
 
     titles = ["founder","ceo", "cto", "owner", "csuite", "cfo", "director", "manager"]
     titles = "&".join(["person_titles[]="+t for t in titles])
-    
-    # url = "https://api.apollo.io/api/v1/mixed_people/search?" + titles + "&contact_email_status[]=verified&" + "organization_ids[]=" + org_id
     url3 = url + titles
 
     try:
