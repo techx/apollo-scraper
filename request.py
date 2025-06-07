@@ -10,11 +10,8 @@ APOLLO_API_KEY = os.getenv("APOLLO_API_KEY")
 #print(APOLLO_API_KEY)
 
 
-def get_companies(industries: str[]):
-    url = "https://api.apollo.io/api/v1/mixed_companies/search?q_organization_keyword_tags[]=finance&q_organization_keyword_tags[]=software"
-
-    tags = "&".join(["q_organization_keyword_tags[]="+t for t in industries])
-    url1 = url + tags
+def get_companies(industry: str):
+    url = "https://api.apollo.io/api/v1/mixed_companies/search?q_organization_keyword_tags[]="+industry
 
     headers = {
         "accept": "application/json",
