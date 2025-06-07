@@ -9,6 +9,35 @@ load_dotenv()
 APOLLO_API_KEY = os.getenv("APOLLO_API_KEY")
 #print(APOLLO_API_KEY)
 
+
+def get_companies(industries: str[]):
+    url = "https://api.apollo.io/api/v1/mixed_companies/search?q_organization_keyword_tags[]=finance&q_organization_keyword_tags[]=software"
+
+    tags = "&".join(["q_organization_keyword_tags[]="+t for t in industries])
+    url1 = url + tags
+
+    headers = {
+        "accept": "application/json",
+        "Cache-Control": "no-cache",
+        "Content-Type": "application/json",
+        "x-api-key": APOLLO_API_KEY
+    }
+
+    try:
+        companies = []
+
+        response = requests.post(url, headers=headers)
+        response.raise_for_status()
+
+        for comp in response.json().get("organizations", []):
+            companies.append(comp['name'])
+        
+        return companies
+    except requests.exceptions.HTTPError as e:
+        print("API request failed:", e)
+
+
+
 # Flow: company name -> organization search -> organization id
 # organization id -> people search -> person id + name
 # person id -> people enrish -> person email

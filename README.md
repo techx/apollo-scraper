@@ -16,7 +16,7 @@ Download the latest release here: https://www.python.org/downloads/
 ```sh
 $ git clone https://github.com/techx/apollo-scraper.git
 ```
-2. Add your Apollo API Key to the .env file.
+2. Add your Apollo API Key (from go/accounts) to the .env file.
 3. Download your company list as a .csv file (you should have one column of company names with "Company" as the header). 
 4. Run the following command:
 ```sh
