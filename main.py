@@ -9,10 +9,10 @@ load_dotenv()
 APOLLO_API_KEY = os.getenv("APOLLO_API_KEY")
 
 if __name__ == "__main__":
-    input_path = input("Enter file path: ")
-    file_name = input("Enter .csv file name (e.g. testing.csv): ")
+    INPUT_PATH = input("Enter .csv file path: ")
+    # file_name = input("Enter .csv file name (e.g. testing.csv): ")
     
-    INPUT_PATH = input_path + "\\" + file_name
+    # INPUT_PATH = input_path + "\\" + file_name
 
     parsed_path = INPUT_PATH.split("\\")[:-1]
     parsed_path.append("emails.csv")
@@ -23,5 +23,6 @@ if __name__ == "__main__":
 
     files.write_email_csv(INPUT_PATH, OUTPUT_PATH, company_info) # write to csv file
 
+    input_path="\\".join(INPUT_PATH.split("\\")[:-1])
     print(f"Results printed to emails.csv file in {str(input_path)}.")
     
