@@ -1,3 +1,5 @@
+import argparse
+
 import files
 import request
 
@@ -8,7 +10,7 @@ load_dotenv()
 
 APOLLO_API_KEY = os.getenv("APOLLO_API_KEY")
 
-if __name__ == "__main__":
+def people_search():
     INPUT_PATH = input("Enter .csv file path: ")
     # file_name = input("Enter .csv file name (e.g. testing.csv): ")
     
@@ -25,4 +27,32 @@ if __name__ == "__main__":
 
     input_path="\\".join(INPUT_PATH.split("\\")[:-1])
     print(f"Results printed to emails.csv file in {str(input_path)}.")
+
+def company_search():
+    OUTPUT_PATH = input("Enter output file path: ")
+    OUTPUT_PATH += "\\emails.csv"
+
+    industries = input("Enter a comma and space separated list of industries (e.g. mining, sales strategy, consulting): ")
+    industries = industries.split(", ")
     
+    company_info = {}
+    for industry in industries:
+        company_ids = request.get_companies(industry) # find companies by industry
+        company_info.update(request.get_emails_from_id(company_ids)) # find POC
+
+    files.write_company_csv(OUTPUT_PATH, company_info) # write to csv file
+
+    print(f"Results printed to emails.csv file in {str(OUTPUT_PATH)}.")
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Run functions from command line")
+    parser.add_argument("function", help="Function to run")
+
+    args = parser.parse_args()
+
+    if args.function == "people_search":
+        people_search()
+    elif args.function == "company_search":
+        company_search()
+    else:
+        print("Invalid function name")

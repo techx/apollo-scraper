@@ -57,3 +57,27 @@ def write_email_csv(input_path: str, output_path: str, company_info: dict):
         print(f"Error: File not found at '{input_path}'")
     except Exception as e:
         print(f"An error occurred: {e}")
+
+def write_company_csv(output_path: str, company_info: dict):
+    """
+    Writes CSV file to the given file path.
+
+    Args:
+        output_path (str): The path to the output CSV file.
+        company_info (dict): Company POC's email and name.
+    """
+    with open(output_path, 'w', newline='', encoding='utf-8') as fout:
+        writer = csv.writer(fout)
+
+        writer.writerow(['Company','Name', 'Email'])  # add new columns
+
+        for key, value in company_info.items():
+            # retrieve respective company's info
+            name = company_info[key][0]
+            email = company_info[key][1]
+
+            # append new column info
+            row = [key, name, email]
+
+            # Write the modified row
+            writer.writerow(row)

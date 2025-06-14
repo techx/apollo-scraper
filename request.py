@@ -9,7 +9,6 @@ load_dotenv()
 APOLLO_API_KEY = os.getenv("APOLLO_API_KEY")
 #print(APOLLO_API_KEY)
 
-
 def get_companies(industry: str):
     url = "https://api.apollo.io/api/v1/mixed_companies/search?q_organization_keyword_tags[]="+industry
 
@@ -27,7 +26,7 @@ def get_companies(industry: str):
         response.raise_for_status()
 
         for comp in response.json().get("organizations", []):
-            companies.append(comp['name'])
+            companies.append([comp['name'],comp['id']])
         
         return companies
     except requests.exceptions.HTTPError as e:
@@ -152,6 +151,24 @@ def get_emails(companies: list):
     company_info = {}
     for c in companies:
         org_id = organization_search(c) # done
+
+        poc = people_search(org_id) if org_id != None else None
+        name = poc[0] if poc != None else None
+        id = poc[1] if poc != None else None
+
+        email = people_enrich(id) if id != None else None
+        #name = " ".join([c,"name"]) # replace with function calls later
+        #email = " ".join([c,"email"])
+
+        company_info[c]=[name, email]
+
+    return company_info
+
+def get_emails_from_id(ids: list):
+    company_info = {}
+    for company in ids:
+        c = company[0]
+        org_id = company[1]
 
         poc = people_search(org_id) if org_id != None else None
         name = poc[0] if poc != None else None
