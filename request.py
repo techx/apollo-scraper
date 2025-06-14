@@ -7,11 +7,7 @@ import main
 
 load_dotenv()
 
-# APOLLO_API_KEY = os.getenv("APOLLO_API_KEY")
-APOLLO_API_KEY = main.APOLLO_API_KEY
-print(APOLLO_API_KEY)
-
-def get_companies(industry: str):
+def get_companies(APOLLO_API_KEY: str, industry: str):
     url = "https://api.apollo.io/api/v1/mixed_companies/search?q_organization_keyword_tags[]="+industry
 
     headers = {
@@ -40,7 +36,7 @@ def get_companies(industry: str):
 # organization id -> people search -> person id + name
 # person id -> people enrish -> person email
 
-def organization_search(organization: str):
+def organization_search(APOLLO_API_KEY: str, organization: str):
     org = "%20".join(organization.split(" "))
 
     url = "".join(["https://api.apollo.io/api/v1/mixed_companies/search?q_organization_name=",org])
@@ -66,7 +62,7 @@ def organization_search(organization: str):
 
 
 
-def people_search(org_id: str):
+def people_search(APOLLO_API_KEY: str, org_id: str):
     url = "https://api.apollo.io/api/v1/mixed_people/search?" + "contact_email_status[]=verified&" + "organization_ids[]=" + org_id + "&"
 
     titles = ["talent","universtiy","recruitment"]
@@ -128,7 +124,7 @@ def people_search(org_id: str):
 
 
 
-def people_enrich(id: str):
+def people_enrich(APOLLO_API_KEY: str, id: str):
     url = "https://api.apollo.io/api/v1/people/match?id=" + id + "&reveal_personal_emails=true&reveal_phone_number=false"
 
     headers = {
@@ -149,16 +145,16 @@ def people_enrich(id: str):
 
 
 
-def get_emails(companies: list):
+def get_emails(APOLLO_API_KEY: str, companies: list):
     company_info = {}
     for c in companies:
-        org_id = organization_search(c) # done
+        org_id = organization_search(APOLLO_API_KEY, c) # done
 
-        poc = people_search(org_id) if org_id != None else None
+        poc = people_search(APOLLO_API_KEY, org_id) if org_id != None else None
         name = poc[0] if poc != None else None
         id = poc[1] if poc != None else None
 
-        email = people_enrich(id) if id != None else None
+        email = people_enrich(APOLLO_API_KEY, id) if id != None else None
         #name = " ".join([c,"name"]) # replace with function calls later
         #email = " ".join([c,"email"])
 
@@ -166,20 +162,22 @@ def get_emails(companies: list):
 
     return company_info
 
-def get_emails_from_id(ids: list):
+def get_emails_from_id(APOLLO_API_KEY: str, ids: list):
     company_info = {}
-    for company in ids:
-        c = company[0]
-        org_id = company[1]
+    
+    if ids != None:
+        for company in ids:
+            c = company[0]
+            org_id = company[1]
 
-        poc = people_search(org_id) if org_id != None else None
-        name = poc[0] if poc != None else None
-        id = poc[1] if poc != None else None
+            poc = people_search(APOLLO_API_KEY, org_id) if org_id != None else None
+            name = poc[0] if poc != None else None
+            id = poc[1] if poc != None else None
 
-        email = people_enrich(id) if id != None else None
-        #name = " ".join([c,"name"]) # replace with function calls later
-        #email = " ".join([c,"email"])
+            email = people_enrich(APOLLO_API_KEY, id) if id != None else None
+            #name = " ".join([c,"name"]) # replace with function calls later
+            #email = " ".join([c,"email"])
 
-        company_info[c]=[name, email]
+            company_info[c]=[name, email]
 
     return company_info

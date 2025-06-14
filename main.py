@@ -22,7 +22,7 @@ def people_search():
     OUTPUT_PATH = "\\".join(parsed_path)
 
     companies = files.read_companies_csv(INPUT_PATH) # read in companies
-    company_info = request.get_emails(companies) # find name and email through apollo
+    company_info = request.get_emails(APOLLO_API_KEY, companies) # find name and email through apollo
 
     files.write_email_csv(INPUT_PATH, OUTPUT_PATH, company_info) # write to csv file
 
@@ -38,8 +38,8 @@ def company_search():
     
     company_info = {}
     for industry in industries:
-        company_ids = request.get_companies(industry) # find companies by industry
-        company_info.update(request.get_emails_from_id(company_ids)) # find POC
+        company_ids = request.get_companies(APOLLO_API_KEY, industry) # find companies by industry
+        company_info.update(request.get_emails_from_id(APOLLO_API_KEY, company_ids)) # find POC
 
     files.write_company_csv(OUTPUT_PATH, company_info) # write to csv file
 
