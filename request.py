@@ -3,11 +3,13 @@ import os
 from dotenv import load_dotenv
 
 import requests
+import main
 
 load_dotenv()
 
-APOLLO_API_KEY = os.getenv("APOLLO_API_KEY")
-#print(APOLLO_API_KEY)
+# APOLLO_API_KEY = os.getenv("APOLLO_API_KEY")
+APOLLO_API_KEY = main.APOLLO_API_KEY
+print(APOLLO_API_KEY)
 
 def get_companies(industry: str):
     url = "https://api.apollo.io/api/v1/mixed_companies/search?q_organization_keyword_tags[]="+industry
