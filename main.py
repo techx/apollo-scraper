@@ -8,7 +8,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-APOLLO_API_KEY = os.getenv("APOLLO_API_KEY")
+# APOLLO_API_KEY = os.getenv("APOLLO_API_KEY")
+global APOLLO_API_KEY
 
 def people_search():
     INPUT_PATH = input("Enter .csv file path: ")
@@ -45,6 +46,8 @@ def company_search():
     print(f"Results printed to emails.csv file in {str(OUTPUT_PATH)}.")
 
 if __name__ == "__main__":
+    APOLLO_API_KEY = input("Please enter you Apollo API key: ")
+
     parser = argparse.ArgumentParser(description="Run functions from command line")
     parser.add_argument("function", help="Function to run")
 
