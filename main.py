@@ -18,7 +18,7 @@ def people_search():
     # INPUT_PATH = input_path + "\\" + file_name
 
     parsed_path = INPUT_PATH.split("\\")[:-1]
-    parsed_path.append("emails.csv")
+    parsed_path.append("people_search_emails.csv")
     OUTPUT_PATH = "\\".join(parsed_path)
 
     companies = files.read_companies_csv(INPUT_PATH) # read in companies
@@ -27,11 +27,11 @@ def people_search():
     files.write_email_csv(INPUT_PATH, OUTPUT_PATH, company_info) # write to csv file
 
     input_path="\\".join(INPUT_PATH.split("\\")[:-1])
-    print(f"Results printed to emails.csv file in {str(input_path)}.")
+    print(f"Results printed to people_search_emails.csv file in {str(input_path)}.")
 
 def company_search():
     OUTPUT_PATH = input("Enter output file path: ")
-    OUTPUT_PATH += "\\emails.csv"
+    OUTPUT_PATH += "\\company_search_emails.csv"
 
     industries = input("Enter a comma and space separated list of industries (e.g. mining, sales strategy, consulting): ")
     industries = industries.split(", ")
@@ -43,7 +43,7 @@ def company_search():
 
     files.write_company_csv(OUTPUT_PATH, company_info) # write to csv file
 
-    print(f"Results printed to emails.csv file in {str(OUTPUT_PATH)}.")
+    print(f"Results printed to company_search_emails.csv file in {str(OUTPUT_PATH)}.")
 
 if __name__ == "__main__":
     APOLLO_API_KEY = input("Please enter you Apollo API key: ")
